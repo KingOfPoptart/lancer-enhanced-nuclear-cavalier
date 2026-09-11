@@ -1,0 +1,239 @@
+{
+  "id": "lenc-fh-pilot",
+  "level": 6,
+  "callsign": "MELTDOWN",
+  "name": "Fusion Hemorrhage Test Pilot",
+  "player_name": "LENC Test",
+  "status": "Active",
+  "dead": false,
+  "text_appearance": "",
+  "notes": "",
+  "history": "",
+  "quirks": [],
+  "current_hp": 8,
+  "background": "",
+  "resistances": [],
+  "portrait": "",
+  "cloud_portrait": "",
+  "group": "",
+  "sort_index": 9,
+  "cc_ver": "",
+  "isDeleted": false,
+  "expireTime": "",
+  "deleteTime": "",
+  "lastModified": "Thu Sep 10 2026 12:00:00 GMT-0400 (Eastern Daylight Time)",
+  "lastUpdate_cloud": "Thu Sep 10 2026 12:00:00 GMT-0400 (Eastern Daylight Time)",
+  "lastSync": "Thu Sep 10 2026 12:00:00 GMT-0400 (Eastern Daylight Time)",
+  "skills": [],
+  "talents": [
+    {
+      "id": "t_nuclear_cavalier",
+      "rank": 2
+    }
+  ],
+  "mechSkills": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "core_bonuses": [],
+  "licenses": [],
+  "reserves": [],
+  "orgs": [],
+  "counter_data": [],
+  "custom_counters": [],
+  "special_equipment": {
+    "PilotGear": [],
+    "Frames": [],
+    "MechWeapons": [],
+    "WeaponMods": [],
+    "MechSystems": []
+  },
+  "bondId": "",
+  "xp": 0,
+  "stress": 0,
+  "isBroken": false,
+  "burdens": [],
+  "bondPowers": [],
+  "powerSelections": 0,
+  "maxStress": 8,
+  "bondAnswers": [
+    "",
+    ""
+  ],
+  "minorIdeal": "",
+  "clocks": [],
+  "combat_history": {
+    "moves": 0,
+    "kills": 0,
+    "damage": 0,
+    "hp_damage": 0,
+    "structure_damage": 0,
+    "overshield": 0,
+    "heat_damage": 0,
+    "reactor_damage": 0,
+    "overcharge_uses": 0,
+    "core_uses": 0
+  },
+  "state": {
+    "active_mech_id": "lenc-fh-mech",
+    "remote_mech_id": "",
+    "stage": "Narrative",
+    "turn": 1,
+    "mission": 0,
+    "actions": 2,
+    "braced": false,
+    "overcharged": false,
+    "prepare": false,
+    "bracedCooldown": false,
+    "redundant": false,
+    "stats": {
+      "moves": 0,
+      "kills": 0,
+      "damage": 0,
+      "hp_damage": 0,
+      "structure_damage": 0,
+      "overshield": 0,
+      "heat_damage": 0,
+      "reactor_damage": 0,
+      "overcharge_uses": 0,
+      "core_uses": 0
+    },
+    "deployed": []
+  },
+  "loadout": {
+    "name": "Primary",
+    "armor": [],
+    "weapons": [],
+    "gear": [],
+    "extendedWeapons": [],
+    "extendedGear": []
+  },
+  "mechs": [
+    {
+      "id": "lenc-fh-mech",
+      "name": "MELTDOWN",
+      "notes": "",
+      "gm_note": "Nuclear Cavalier rank 2 (Fusion Hemorrhage, cumulative with rank 1 Aggressive Heat Bleed) test fixture. Frame heatcap is 6, so Danger Zone starts at 3 heat. Starts at 2/6 heat; the Rail Rifle's Heat 1 (self) tag pushes it to 3/6 - into the Danger Zone - on the very shot that fires it. That attack's damage roll should show both effects: Aggressive Heat Bleed's +2 Heat, and Fusion Hemorrhage converting the Rail Rifle's Kinetic damage to Energy plus its own +1d6 Energy bonus damage.",
+      "frame": "mf_standard_pattern_i_everest",
+      "active": true,
+      "current_structure": 4,
+      "current_move": 5,
+      "boost": 0,
+      "current_hp": 10,
+      "overshield": 0,
+      "current_stress": 4,
+      "current_heat": 2,
+      "current_repairs": 5,
+      "current_overcharge": 0,
+      "current_core_energy": 1,
+      "statuses": [],
+      "conditions": [],
+      "resistances": [],
+      "reactions": [],
+      "burn": 0,
+      "destroyed": false,
+      "defeat": "",
+      "activations": 1,
+      "meltdown_imminent": false,
+      "reactor_destroyed": false,
+      "core_active": false,
+      "portrait": "",
+      "cloud_portrait": "",
+      "cc_ver": "",
+      "lastModified": "Thu Sep 10 2026 12:00:00 GMT-0400 (Eastern Daylight Time)",
+      "isDeleted": false,
+      "expireTime": "",
+      "deleteTime": "",
+      "counter_data": [],
+      "custom_counters": [],
+      "loadouts": [
+        {
+          "id": "d1e2f3a4-2b3c-4d5e-8f6a-1b2c3d4e5f60",
+          "name": "Primary",
+          "systems": [],
+          "integratedSystems": [],
+          "mounts": [
+            {
+              "mount_type": "Main",
+              "lock": false,
+              "slots": [
+                {
+                  "size": "Main",
+                  "weapon": {
+                    "id": "mw_rail_rifle",
+                    "instanceId": "1f2e3d4c-6b7a-4c8d-9e0f-1a2b3c4d5e6f",
+                    "note": "",
+                    "mod": null,
+                    "flavorName": "",
+                    "flavorDescription": "",
+                    "selectedProfile": 0,
+                    "customDamageType": null,
+                    "maxUseOverride": 0,
+                    "destroyed": false,
+                    "uses": 0,
+                    "cascading": false,
+                    "loaded": true
+                  }
+                }
+              ],
+              "extra": [],
+              "bonus_effects": [],
+              "modifiable": true
+            }
+          ],
+          "integratedMounts": [],
+          "improved_armament": {
+            "mount_type": "Flex",
+            "lock": false,
+            "slots": [
+              {
+                "size": "Flex",
+                "weapon": null
+              }
+            ],
+            "extra": [
+              {
+                "size": "Auxiliary",
+                "weapon": null
+              }
+            ],
+            "bonus_effects": [],
+            "modifiable": true
+          },
+          "superheavy_mounting": {
+            "mount_type": "Superheavy",
+            "lock": false,
+            "slots": [
+              {
+                "size": "Superheavy",
+                "weapon": null
+              }
+            ],
+            "extra": [],
+            "bonus_effects": [],
+            "modifiable": true
+          },
+          "integratedWeapon": {
+            "mount_type": "Aux",
+            "lock": false,
+            "slots": [
+              {
+                "size": "Auxiliary",
+                "weapon": null
+              }
+            ],
+            "extra": [],
+            "bonus_effects": [],
+            "modifiable": true
+          },
+          "extraMounts": [],
+          "extraIntegratedMounts": []
+        }
+      ],
+      "active_loadout_index": 0
+    }
+  ],
+  "brews": []
+}

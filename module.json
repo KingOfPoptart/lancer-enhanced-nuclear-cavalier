@@ -1,0 +1,48 @@
+{
+  "id": "lancer-enhanced-nuclear-cavalier",
+  "title": "Lancer Enhanced Nuclear Cavalier",
+  "description": "<p>Automates the two Danger Zone triggers of the <strong>Nuclear Cavalier</strong> talent in the <a href=\"https://foundryvtt.com/packages/lancer\">LANCER</a> system: <strong>Aggressive Heat Bleed</strong> (rank 1, +2 Heat on your first attack roll this turn while in the Danger Zone) and <strong>Fusion Hemorrhage</strong> (rank 2, converts Kinetic/Explosive to Energy and adds +1d6 Energy bonus damage on your first ranged or melee attack roll this turn while in the Danger Zone). Danger Zone is checked live, so a weapon whose own self-heat pushes the mech into the Danger Zone still triggers on that same shot. Does not touch rank 3 (Here, Catch!), which the system already handles.</p>",
+  "version": "1.0.0",
+  "compatibility": {
+    "minimum": "13",
+    "verified": "13"
+  },
+  "authors": [
+    {
+      "name": "KingOfPoptart",
+      "url": "https://github.com/KingOfPoptart"
+    }
+  ],
+  "esmodules": ["scripts/module.mjs"],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    }
+  ],
+  "relationships": {
+    "systems": [
+      {
+        "id": "lancer",
+        "type": "system",
+        "compatibility": {
+          "minimum": "3.0.0"
+        }
+      }
+    ]
+  },
+  "flags": {
+    "hotReload": {
+      "extensions": ["json"],
+      "paths": ["lang"]
+    }
+  },
+  "url": "https://github.com/KingOfPoptart/lancer-enhanced-nuclear-cavalier",
+  "manifest": "https://github.com/KingOfPoptart/lancer-enhanced-nuclear-cavalier/releases/latest/download/module.json",
+  "download": "https://github.com/KingOfPoptart/lancer-enhanced-nuclear-cavalier/releases/download/v1.0.0/module.zip",
+  "readme": "https://github.com/KingOfPoptart/lancer-enhanced-nuclear-cavalier/blob/main/README.md",
+  "bugs": "https://github.com/KingOfPoptart/lancer-enhanced-nuclear-cavalier/issues",
+  "changelog": "https://github.com/KingOfPoptart/lancer-enhanced-nuclear-cavalier/blob/main/CHANGELOG.md",
+  "license": "MIT"
+}
