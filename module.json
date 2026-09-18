@@ -1,8 +1,8 @@
 {
   "id": "lancer-enhanced-nuclear-cavalier",
   "title": "Lancer Enhanced Nuclear Cavalier",
-  "description": "<p>Automates the two Danger Zone triggers of the <strong>Nuclear Cavalier</strong> talent in the <a href=\"https://foundryvtt.com/packages/lancer\">LANCER</a> system: <strong>Aggressive Heat Bleed</strong> (rank 1, +2 Heat on your first attack roll this turn while in the Danger Zone) and <strong>Fusion Hemorrhage</strong> (rank 2, converts Kinetic/Explosive to Energy and adds +1d6 Energy bonus damage on your first ranged or melee attack roll this turn while in the Danger Zone). Danger Zone is checked live, so a weapon whose own self-heat pushes the mech into the Danger Zone still triggers on that same shot. Does not touch rank 3 (Here, Catch!), which the system already handles.</p>",
-  "version": "1.0.0",
+  "description": "<p>Automates the two Danger Zone triggers of the <strong>Nuclear Cavalier</strong> talent in the <a href=\"https://foundryvtt.com/packages/lancer\">LANCER</a> system: <strong>Aggressive Heat Bleed</strong> (rank 1, +2 Heat on your first attack roll this turn while in the Danger Zone) and <strong>Fusion Hemorrhage</strong> (rank 2, converts Kinetic/Explosive to Energy and adds +1d6 Energy bonus damage on your first ranged or melee attack roll this turn while in the Danger Zone). Danger Zone status is checked as of the start of that attack, so a weapon whose own self-heat pushes the mech into the Danger Zone doesn't trigger until the mech's next attack (a world setting can restore the old same-shot behavior for tables that prefer it). Does not touch rank 3 (Here, Catch!), which the system already handles.</p>",
+  "version": "1.1.0",
   "compatibility": {
     "minimum": "13",
     "verified": "13"

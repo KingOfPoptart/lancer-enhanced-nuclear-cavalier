@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.1.0
+
+Bugfix: a weapon's own self-heat could wrongly trigger Nuclear Cavalier on
+the same shot that caused it.
+
+- **Danger Zone is now snapshotted before the attack's own self-heat
+  resolves**, not checked live at damage-roll time. Per Heat Self's wording
+  ("immediately after using this weapon or system, the user takes X Heat"),
+  that heat is an effect of the attack, not a precondition of it — so a shot
+  whose own self-heat pushes the mech into the Danger Zone no longer
+  triggers Aggressive Heat Bleed or Fusion Hemorrhage on that same shot; the
+  trigger becomes available starting the mech's next attack instead.
+  Thanks to u/SearchForSunnyD on r/LancerRPG for catching this.
+- Added a world setting, **"Allow same-shot self-heat trigger"** (off by
+  default), for tables that prefer the old v1.0.0 behavior.
+
 ## 1.0.0
 
 Initial release. Both Danger Zone-triggered ranks of Nuclear Cavalier are

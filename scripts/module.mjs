@@ -27,18 +27,40 @@
  * separate HUD-only "extra base damage" list) - see the comment on
  * `fusionHemorrhageStep` for how the type conversion actually works.
  *
- * Danger Zone is computed live from `mech.system.heat` (value * 2 >= max) at
- * that point, not snapshotted at the start of the turn - and not read from
- * `mech.system.statuses.dangerzone`, which only mirrors a `dangerzone` status
- * effect actually applied to the actor and is never set from heat by the
- * base system on its own; reading it would silently never trigger.
- * `WeaponAttackFlow` already runs `applySelfHeat` (a weapon's own `Heat X
- * (self)` tag) and persists it to the actor before `DamageRollFlow` ever
- * starts, so a shot whose own self-heat pushes the mech into the Danger Zone
- * (e.g. 2/6 heat, weapon has Heat 1 (self), firing it lands at 3/6 - half of
- * a 6-heat-cap mech, which is the Danger Zone) already computes as "in the
- * Danger Zone" by the time these steps check it, and triggers on that same
- * shot. No special-casing needed for that case.
+ * Danger Zone is computed from `mech.system.heat` (value * 2 >= max) - not
+ * read from `mech.system.statuses.dangerzone`, which only mirrors a
+ * `dangerzone` status effect actually applied to the actor and is never set
+ * from heat by the base system on its own; reading it would silently never
+ * trigger.
+ *
+ * It is NOT computed live at `DamageRollFlow` time, though - it's snapshotted
+ * earlier, in `WeaponAttackFlow`, by `captureDangerZoneBeforeSelfHeat`
+ * (inserted after `showAttackHUD`, alongside `reorderFirstAttackTarget`).
+ * `WeaponAttackFlow` runs `applySelfHeat` (a weapon's own `Heat X (self)`
+ * tag) and persists it to the actor before `DamageRollFlow` ever starts, so a
+ * live check in the damage flow would see a shot's own self-heat as having
+ * already put the mech in the Danger Zone and wrongly trigger on that same
+ * shot. Per Heat Self's own wording ("immediately after using this weapon or
+ * system, the user takes X Heat"), that heat is an effect of the attack, not
+ * a precondition of it - so if a shot's self-heat is what crosses the mech
+ * into the Danger Zone, the trigger isn't available until the mech's *next*
+ * attack, not this one. The snapshot is stashed as an actor flag (NOT on
+ * `state.data` - confirmed by testing that a custom `state.data` field placed
+ * in `WeaponAttackFlow` does not survive into the later, separately-started
+ * `DamageRollFlow`, even though `hit_results`/`acc_diff.targets` do; only an
+ * actor flag reliably carries across), tagged with the weapon's uuid so
+ * `snapshotDangerZone` only trusts a snapshot taken for *this* weapon's
+ * attack. `aggressiveHeatBleedStep`/`fusionHemorrhageStep` read it in
+ * preference to a live check; a live check remains the fallback whenever
+ * there's no matching snapshot - a damage roll that didn't come through
+ * `WeaponAttackFlow` (e.g. a tech attack, which has no weapon item and so
+ * never matches), or a snapshot that's actually stale (a second weapon
+ * attack queued before the first one's damage was rolled).
+ *
+ * A world-scope setting, `allowSelfHeatTrigger` (off by default), restores
+ * the pre-1.0.1 same-shot-trigger behavior for tables that prefer it: when
+ * on, both trigger checks call `inDangerZone(mech)` live instead of reading
+ * the snapshot, same as v1.0.0 did unconditionally. See `allowSelfHeatTrigger()`.
  *
  * "First attack this turn" is tracked the same way as the sibling module's
  * "1/round" lock: an actor flag storing `{combat, round}`, one flag per
@@ -132,6 +154,12 @@ const MODULE_ID = "lancer-enhanced-nuclear-cavalier";
 const NUCLEAR_CAVALIER_LID = "t_nuclear_cavalier";
 const AHB_FLAG = "ahb";
 const FH_FLAG = "fh";
+const ALLOW_SELF_HEAT_TRIGGER_SETTING = "allowSelfHeatTrigger";
+
+/** v1.0.0 compatibility toggle - see the setting's hint text and the module doc comment. */
+function allowSelfHeatTrigger() {
+  return !!game.settings?.get(MODULE_ID, ALLOW_SELF_HEAT_TRIGGER_SETTING);
+}
 
 /* -------------------------------------------------------------------------- */
 /*  Talent rank + Danger Zone lookups                                         */
@@ -181,6 +209,54 @@ async function markUsedThisRound(mech, key) {
     round: combat?.round ?? null,
     at: Date.now(),
   });
+}
+
+const DANGER_ZONE_SNAPSHOT_FLAG = "dzSnapshot";
+
+/**
+ * Snapshot Danger Zone status before `WeaponAttackFlow`'s own `applySelfHeat`
+ * step can apply this shot's self-heat - see the module doc comment for why.
+ * Inserted after `showAttackHUD`, i.e. before `rollAttacks` and well before
+ * self-heat resolves, so this reflects heat from anything *earlier* this
+ * turn but never this attack's own self-heat.
+ *
+ * Stashed as an actor flag, NOT on `state.data` - despite `hit_results` and
+ * `acc_diff.targets` visibly surviving from `WeaponAttackFlow`'s finished
+ * state into the later, separately-started `DamageRollFlow` (the mechanism
+ * `reorderFirstAttackTarget`'s doc comment describes), an arbitrary custom
+ * field placed on `state.data` here does NOT make that trip - confirmed by
+ * live testing: `data[DANGER_ZONE_SNAPSHOT_FLAG]` reads back `undefined` in
+ * `aggressiveHeatBleedStep`/`fusionHemorrhageStep` every time, silently
+ * falling through to a live check and reintroducing the exact bug this is
+ * meant to fix. Whatever carries `hit_results` across evidently only
+ * preserves fields the system's own damage-flow initializer already knows
+ * about, not arbitrary extras. An actor flag has no such problem - it's real
+ * persisted document state, trivially reachable from any later flow.
+ *
+ * Recorded with the weapon's uuid so `snapshotDangerZone` can refuse to use
+ * a stale snapshot left by a different weapon's attack (e.g. a queued second
+ * attack, or a tech attack's `TechAttackFlow` - which has no item and so
+ * never matches - falling correctly through to a live check instead).
+ */
+async function captureDangerZoneBeforeSelfHeat(state) {
+  try {
+    const mech = state?.actor;
+    if (!mech || mech.type !== "mech") return true;
+    await mech.setFlag(MODULE_ID, DANGER_ZONE_SNAPSHOT_FLAG, {
+      weaponUuid: state?.item?.uuid ?? null,
+      inDangerZone: inDangerZone(mech),
+    });
+  } catch (err) {
+    console.error(`${MODULE_ID} | Danger Zone snapshot failed`, err);
+  }
+  return true; // never block the attack flow
+}
+
+/** The snapshot from `captureDangerZoneBeforeSelfHeat`, if it matches this weapon; `null` otherwise. */
+function snapshotDangerZone(mech, weapon) {
+  const snap = mech?.getFlag(MODULE_ID, DANGER_ZONE_SNAPSHOT_FLAG);
+  if (!snap || !weapon?.uuid || snap.weaponUuid !== weapon.uuid) return null;
+  return snap.inDangerZone;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -351,7 +427,8 @@ async function aggressiveHeatBleedStep(state) {
     const data = state?.data;
     if (!mech || mech.type !== "mech" || !data) return true;
     if (nuclearCavalierRank(mech) < 1) return true;
-    if (!inDangerZone(mech)) return true;
+    const wasInDangerZone = allowSelfHeatTrigger() ? inDangerZone(mech) : (snapshotDangerZone(mech, state?.item) ?? inDangerZone(mech));
+    if (!wasInDangerZone) return true;
     if (usedThisRound(mech, AHB_FLAG)) return true;
 
     // This is the first qualifying attack roll this turn - the trigger is
@@ -467,7 +544,8 @@ async function fusionHemorrhageStep(state) {
     if (!mech || mech.type !== "mech" || !data) return true;
     if (weapon?.type !== "mech_weapon") return true; // ranged/melee only
     if (nuclearCavalierRank(mech) < 2) return true;
-    if (!inDangerZone(mech)) return true;
+    const wasInDangerZone = allowSelfHeatTrigger() ? inDangerZone(mech) : (snapshotDangerZone(mech, weapon) ?? inDangerZone(mech));
+    if (!wasInDangerZone) return true;
     if (usedThisRound(mech, FH_FLAG)) return true;
 
     await markUsedThisRound(mech, FH_FLAG);
@@ -554,11 +632,13 @@ async function revertFusionHemorrhage(flow) {
 /* -------------------------------------------------------------------------- */
 
 function registerFlowSteps(flowSteps, flows) {
+  const dangerZoneSnapshotKey = `${MODULE_ID}.captureDangerZoneBeforeSelfHeat`;
   const reorderKey = `${MODULE_ID}.reorderFirstAttackTarget`;
   const ahbKey = `${MODULE_ID}.aggressiveHeatBleed`;
   const ahbApplyKey = `${MODULE_ID}.aggressiveHeatBleedApply`;
   const fhKey = `${MODULE_ID}.fusionHemorrhage`;
   const fhApplyKey = `${MODULE_ID}.fusionHemorrhageApply`;
+  flowSteps.set(dangerZoneSnapshotKey, captureDangerZoneBeforeSelfHeat);
   flowSteps.set(reorderKey, reorderFirstAttackTarget);
   flowSteps.set(ahbKey, aggressiveHeatBleedStep);
   flowSteps.set(ahbApplyKey, applyAggressiveHeatBleedBonus);
@@ -567,8 +647,9 @@ function registerFlowSteps(flowSteps, flows) {
 
   const weaponAttackFlow = flows.get("WeaponAttackFlow");
   if (weaponAttackFlow?.insertStepAfter) {
+    weaponAttackFlow.insertStepAfter("showAttackHUD", dangerZoneSnapshotKey);
     weaponAttackFlow.insertStepAfter("showAttackHUD", reorderKey);
-    console.log(`${MODULE_ID} | inserted "${reorderKey}" into WeaponAttackFlow`);
+    console.log(`${MODULE_ID} | inserted "${dangerZoneSnapshotKey}" and "${reorderKey}" into WeaponAttackFlow`);
   } else {
     console.warn(`${MODULE_ID} | WeaponAttackFlow not available - multi-target first-roll prompt disabled`);
   }
@@ -589,7 +670,17 @@ function registerFlowSteps(flowSteps, flows) {
 /*  Wiring                                                                    */
 /* -------------------------------------------------------------------------- */
 
-Hooks.once("init", () => console.log(`${MODULE_ID} | init`));
+Hooks.once("init", () => {
+  game.settings.register(MODULE_ID, ALLOW_SELF_HEAT_TRIGGER_SETTING, {
+    name: `${MODULE_ID}.settings.allowSelfHeatTrigger.name`,
+    hint: `${MODULE_ID}.settings.allowSelfHeatTrigger.hint`,
+    scope: "world",
+    config: true,
+    type: Boolean,
+    default: false,
+  });
+  console.log(`${MODULE_ID} | init`);
+});
 Hooks.once("lancer.registerFlows", registerFlowSteps);
 Hooks.on("lancer.postFlow.DamageRollFlow", revertFusionHemorrhage);
 

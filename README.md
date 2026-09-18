@@ -20,6 +20,15 @@ its data in an actor flag.
 Rank 3 (**Here, Catch!**, the integrated Fuel Rod Gun) is already handled
 elsewhere and is out of scope for this module.
 
+Nuclear Cavalier's own wording is explicit about timing: *"If you enter the
+Danger Zone during your turn, this talent takes effect on your next
+attack."* So a weapon whose own self-heat (`Heat X (Self)`: *"Immediately
+after using this weapon or system, the user takes X Heat"*) is what crosses
+you into the Danger Zone doesn't trigger the bonus on that same shot — it
+becomes available starting your next attack. A world setting, **"Allow
+same-shot self-heat trigger"** (off by default, GM-only), restores the
+same-shot behavior for tables that prefer it.
+
 ## Install
 
 Manifest URL:
@@ -33,12 +42,11 @@ LANCER 3.1.3.
 
 ## Screenshots
 
-Firing a weapon whose own self-heat pushes the mech into the Danger Zone —
-Rail Rifle, `Heat 1 (Self)`:
+Attacking with a Rail Rifle while already in the Danger Zone:
 
-![Attack roll for a weapon carrying Heat 1 (Self)](docs/01-ahb-attack.png)
+![Attack roll while already in the Danger Zone](docs/01-ahb-attack.png)
 
-**Aggressive Heat Bleed** adds +2 Heat to that same attack's damage roll:
+**Aggressive Heat Bleed** adds +2 Heat to that attack's damage roll:
 
 ![Damage HUD with the Aggressive Heat Bleed +2 Heat bonus row](docs/02-ahb-damage.png)
 

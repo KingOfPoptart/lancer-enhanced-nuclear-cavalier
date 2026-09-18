@@ -1,4 +1,6 @@
 {
   "lancer-enhanced-nuclear-cavalier.ahb.applied": "Aggressive Heat Bleed: +2 Heat added.",
-  "lancer-enhanced-nuclear-cavalier.fh.applied": "Fusion Hemorrhage: damage converted to Energy, +1d6 Energy bonus damage added."
+  "lancer-enhanced-nuclear-cavalier.fh.applied": "Fusion Hemorrhage: damage converted to Energy, +1d6 Energy bonus damage added.",
+  "lancer-enhanced-nuclear-cavalier.settings.allowSelfHeatTrigger.name": "Allow same-shot self-heat trigger",
+  "lancer-enhanced-nuclear-cavalier.settings.allowSelfHeatTrigger.hint": "Nuclear Cavalier: 'If you enter the DANGER ZONE during your turn, this talent takes effect on your next attack.' Heat X (Self): 'Immediately after using this weapon or system, the user takes X Heat.' So by default (off), a shot whose own self-heat crosses you into the Danger Zone doesn't trigger Aggressive Heat Bleed / Fusion Hemorrhage until your next attack - the self-heat resolves after the attack that caused it. Enable this to trigger on that same shot instead."
 }
